@@ -32,6 +32,8 @@
             type="tel" 
             required
             placeholder="例如：0912345678"
+            minlength="10"
+            maxlength="10"
             class="w-full px-4 py-2 bg-lotus-50 border border-lotus-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-lotus-400 text-lotus-600 placeholder-lotus-300 transition-colors"
           />
         </div>
@@ -111,13 +113,13 @@ import BaseModal from '@/components/common/BaseModal.vue'
 
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
-  // 💡 接收父元件傳來的資料：沒有傳就是 null (代表新增)
+  // 接收父元件傳來的資料：沒有傳就是 null (代表新增)
   memberData: { type: Object, default: () => null } 
 })
 
 const emit = defineEmits(['close', 'submit'])
 
-// 💡 計算屬性：只要有傳入資料，就是編輯模式
+// 計算屬性：只要有傳入資料，就是編輯模式
 const isEditMode = computed(() => !!props.memberData)
 
 // 初始表單狀態
@@ -133,7 +135,7 @@ const defaultForm = {
 const formData = ref({ ...defaultForm })
 const isSubmitting = ref(false)
 
-// 💡 監聽彈窗的開關：每次打開時都要重新決定表單的內容
+// 監聽彈窗的開關：每次打開時都要重新決定表單的內容
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     if (isEditMode.value) {
@@ -154,7 +156,6 @@ const handleClose = () => {
 const handleSubmit = async () => {
   isSubmitting.value = true
   try {
-    // 💡 這裡統一發送 submit 事件，並把目前的資料丟出去
     // 父元件可以透過檢查物件裡有沒有 memberId 來決定要打 POST(新增) 還是 PUT(修改) API
     emit('submit', { ...formData.value })
     handleClose()
