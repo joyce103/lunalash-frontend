@@ -12,6 +12,13 @@
       <span class="text-lg leading-none">+</span> 新增會員
     </button>
 
+    <button 
+      @click="getAllMembers"
+      class="mt-4 sm:mt-0 px-5 py-2.5 bg-lotus-400 hover:bg-lotus-500 text-white rounded-xl shadow-sm transition-colors font-medium flex items-center text-sm"
+    >
+      <span class="text-lg leading-none"></span> 所有會員
+    </button>
+
     <SearchBar 
       v-model="searchKeyword"
       placeholder="請輸入手機號碼"
@@ -19,8 +26,8 @@
       @search="handleSearch"
     />
 
-    <div v-if="hasSearched && (!memberList || memberList.length === 0) && !loading" class="text-center py-12 bg-white rounded-2xl border border-lotus-100 border-dashed">
-      <p class="text-lotus-400">查無此會員資料，請確認輸入是否正確。</p>
+    <div v-if="(hasSearched || hasAllMembers) && (!memberList || memberList.length === 0) && !loading" class="text-center py-12 bg-white rounded-2xl border border-lotus-100 border-dashed">
+      <p class="text-lotus-400">{{ hasSearched ? '查無此會員資料，請確認輸入是否正確。' : '查無會員資料，現在就新增第一位會員吧！' }}</p>
     </div>
 
     <MemberCard 
@@ -89,5 +96,13 @@ const handleFormSubmit = async (formData) => {
   } else {
     const res = await member.addMember(formData);
   }
+}
+
+// 查詢所有會員
+const hasAllMembers = ref(false)
+const getAllMembers = async () => {
+  const res = await member.getAllMembers()
+  memberList.value = res || []
+  hasAllMembers.value = true
 }
 </script>

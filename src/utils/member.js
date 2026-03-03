@@ -5,7 +5,7 @@ const member = {
   async getAllMembers() {
     try {
       const res = await api.get('/member/getAllMembers')
-      return res.resultData
+      return res ? res : null
     } catch (error) {
       console.error(error)
       return []
