@@ -47,7 +47,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import member from '../utils/member' // 記得確認這條路徑對不對
+import member from '../utils/member'
 import PageTitle from '@/components/common/PageTitle.vue'
 import SearchBar from '@/components/common/SearchBar.vue'
 import MemberCard from '@/components/common/MemberCard.vue'
