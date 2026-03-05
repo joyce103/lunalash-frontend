@@ -11,7 +11,16 @@ const transaction = {
       return []
     }
   },
-
+  // 查詢單筆交易
+  async getTransactionById(transactionId) {
+    try {
+      const res = await api.get(`transactions/${transactionId}`)
+      return res ? res : []
+    } catch (error) {
+      console.error(error)
+      return null
+    }
+  },
 }
 
 export default transaction
