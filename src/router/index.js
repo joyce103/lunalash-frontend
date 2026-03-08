@@ -4,6 +4,7 @@ import MemberQuery from '../views/MemberQuery.vue'
 import AboutView from '../views/AboutView.vue'
 import Transaction from '../views/Transaction.vue'
 import TransactionQuery from '../views/TransactionQuery.vue'
+import CreateTransactionForm from '../views/CreateTransactionForm.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -32,6 +33,11 @@ const router = createRouter({
       name: 'transactionQuery',
       component: TransactionQuery
     },
+    {
+      path: '/createTransaction',
+      name: 'createTransaction',
+      component: CreateTransactionForm
+    }
   ],
 })
 
