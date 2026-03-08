@@ -81,6 +81,6 @@ const goDetail = (memberId) => {
 }
 
 const createTransaction = (memberId) => {
-  console.log('新增交易', memberId)
+  location.href = `/createTransaction?memberId=${memberId}`
 }
 </script>
