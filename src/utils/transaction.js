@@ -21,6 +21,16 @@ const transaction = {
       return null
     }
   },
+  // 新增交易
+  async createTransaction(postData) {
+    try {
+      const res = await api.post(`transactions`, postData)
+      return res
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+  },
 }
 
 export default transaction

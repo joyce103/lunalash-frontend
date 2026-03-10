@@ -212,16 +212,17 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
 import { ref } from 'vue'
+import transaction from '@/utils/transaction'
 
 const formData = ref({
   memberId: Number(new URLSearchParams(window.location.search).get('memberId')) || null,
   transactionTime: new Date().toISOString().slice(0, 16),
-  lashArtist: '',
+  lashArtist: 'Ava',
   paymentMethod: '現金',
   remark: '',
-  // 後端會自己算，所以把 amountBeforeDiscount, amountAfterDiscount 等欄位拿掉，不送給後端
+  amountBeforeDiscount: 0,
+  amountAfterDiscount: 0,
   operationItems: [],
   transactionDetails: []
 })
@@ -255,7 +256,7 @@ const removeTransactionDetail = (index) => formData.value.transactionDetails.spl
 
 
 // === 送出處理 ===
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (formData.value.transactionDetails.length === 0) {
     alert('請至少新增一筆收費明細')
     return
@@ -285,7 +286,13 @@ const handleSubmit = () => {
     }
   })
 
-  console.log('準備打 API，傳送的 Payload:', payload)
-  // await transactionApi.createTransaction(payload)
+  const res = await transaction.createTransaction(payload)
+  if (res) {
+    alert('交易新增成功！')
+    // 新增成功後導回會員交易頁
+    window.location.href = `/transaction?memberId=${formData.value.memberId}`
+  } else {
+    alert('交易新增失敗！')
+  }
 }
 </script>
