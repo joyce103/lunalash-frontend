@@ -19,8 +19,7 @@ api.interceptors.response.use(
       return Promise.reject(new Error(res.resultMsg || 'Error'));
     }
 
-    // 如果成功，自動把信封拆掉，只回傳裡面的 resultData 給頁面
-    return res.resultData;
+    return res;
   },
   (error) => {
     // 處理 HTTP 層級的錯誤 (例如 404, 500, 或後端根本沒開)

@@ -5,7 +5,8 @@ const member = {
   async getAllMembers() {
     try {
       const res = await api.get('/member/getAllMembers')
-      return res ? res : null
+      const { resultCode, resultData } = res || {}
+      return resultCode === 0 && resultData ? res.resultData : null
     } catch (error) {
       console.error(error)
       return []
@@ -17,7 +18,8 @@ const member = {
       const res = await api.post('/member/getMemberByPhone', {
         phone
       })
-      return res ? res : null
+      const { resultCode, resultData } = res || {}
+      return resultCode === 0 && resultData ? res.resultData : null
     } catch (error) {
       console.error(error)
       return null
@@ -27,7 +29,12 @@ const member = {
   async addMember(postData) {
     try {
       const res = await api.post('/member/addMember', postData)
-      return res ? res : null
+      if (res.resultCode === 0) {
+        alert('會員資料新增成功！')
+        return true
+      } else {
+        alert('會員資料新增失敗: ' + res.resultMsg)
+      }
     } catch (error) {
       console.error(error)
       return null
@@ -37,7 +44,12 @@ const member = {
   async updateMember(postData) {
     try {
       const res = await api.put('/member/updateMember', postData)
-      return res ? res : null
+      if (res.resultCode === 0) {
+        alert('會員資料更新成功！')
+        return true
+      } else {
+        alert('會員資料更新失敗: ' + res.resultMsg)
+      }
     } catch (error) {
       console.error(error)
       return null
