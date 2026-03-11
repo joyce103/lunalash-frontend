@@ -14,6 +14,7 @@
         v-for="tx in details" 
         :key="tx.transactionId" 
         :transaction="tx" 
+        @delete="handleDeleteTransaction"
       />
     </div>
 
@@ -51,6 +52,20 @@ const getTransactionsByMemberId = async () => {
     details.value = res || []
   } finally {
     loading.value = false
+  }
+}
+
+// 刪除交易
+const handleDeleteTransaction = async (transactionId) => {
+  try {
+    const res = await transaction.deleteTransaction(transactionId)
+    if (res) {
+      // 刪除成功 從列表中移除該交易
+      details.value = details.value.filter(tx => tx.transactionId !== transactionId)
+    }
+  } catch (error) {
+    console.error('刪除失敗', error)
+    alert('刪除失敗，請稍後再試。')
   }
 }
 
