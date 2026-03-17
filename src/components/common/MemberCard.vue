@@ -33,6 +33,7 @@
         <p class="flex items-center gap-2"><span>📱</span> {{ member.phone }}</p>
         <p class="flex items-center gap-2"><span>📅</span> 加入：{{ formatDate(member.createdAt) }}</p>
         <p class="flex items-center gap-2"><span>🎂</span> 生日：{{ formatDate(member.birthday) }}</p>
+        <p class="flex items-center gap-2"><span>📅</span> 最近消費：{{ member.updatedAt }}</p>
       </div>
 
       <div class="flex gap-3 mt-auto">
