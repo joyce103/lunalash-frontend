@@ -32,7 +32,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">會員編號 (Member ID)</label>
-            <input v-model.number="formData.memberId" type="number" placeholder="若無可留空" class="w-full px-4 py-2 bg-lotus-50 border border-lotus-300 rounded-xl focus:ring-2 focus:ring-lotus-400 text-lotus-600 outline-none transition-colors" />
+            <input v-model.number="formData.memberId" type="number" placeholder="若無可留空" readonly="true" class="w-full px-4 py-2 bg-lotus-50 border border-lotus-300 rounded-xl focus:ring-2 focus:ring-lotus-400 text-lotus-600 outline-none transition-colors" />
           </div>
         </div>
       </section>
@@ -164,10 +164,10 @@
                 
                 <td class="py-3 pr-2">
                   <div v-if="detail.discountType === 'R'">
-                    <input v-model.number="detail.discountRate" type="number" step="0.01" placeholder="如: 0.9 (九折)" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-lotus-50" />
+                    <input v-model.number="detail.discountRate" type="number" max="1" min="0" step="0.01" placeholder="如: 0.9 (九折)" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-lotus-50" />
                   </div>
                   <div v-else-if="detail.discountType === 'A'">
-                    <input v-model.number="detail.discountPrice" type="number" placeholder="如: 100" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-lotus-50" />
+                    <input v-model.number="detail.discountPrice" type="number" min="0" placeholder="如: 100" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-lotus-50" />
                   </div>
                   <div v-else class="text-gray-300 px-2 py-1.5 text-center bg-gray-50 rounded">
                     -
