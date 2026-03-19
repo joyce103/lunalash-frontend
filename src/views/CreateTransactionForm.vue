@@ -15,7 +15,16 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">消費時間 <span class="text-red-400">*</span></label>
-            <input v-model="formData.transactionTime" type="datetime-local" required class="w-full px-4 py-2 bg-lotus-50 border border-lotus-300 rounded-xl focus:ring-2 focus:ring-lotus-400 text-lotus-600 outline-none transition-colors" />
+            <VueDatePicker 
+              v-model="formData.transactionTime" 
+              format="yyyy/MM/dd HH:00"
+              :is-24="true"
+              :minutes-increment="60"
+              :clearable="false"
+              :enable-seconds="false"
+              auto-apply
+              input-class-name="w-full px-4 py-2 bg-lotus-50 border border-lotus-300 rounded-xl focus:ring-2 focus:ring-lotus-400 text-lotus-600 outline-none transition-colors"
+            />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">美睫師 <span class="text-red-400">*</span></label>
@@ -150,9 +159,45 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
               <tr v-for="(detail, dIndex) in formData.transactionDetails" :key="dIndex">
-                <td class="py-3 pr-2"><input v-model="detail.itemName" type="text" placeholder="如: 睫毛雨衣" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400" /></td>
-                <td class="py-3 pr-2"><input v-model.number="detail.itemPrice" type="number" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400" /></td>
-                <td class="py-3 pr-2"><input v-model.number="detail.quantity" type="number" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400" /></td>
+                <td class="py-3 pr-2">
+                  <select 
+                    v-if="!detail.isCustom"
+                    v-model="detail.itemName" 
+                    @change="handleItemChange(detail)"
+                    required
+                    class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-white"
+                  >
+                    <option value="" disabled>請選擇品項</option>
+                    <option v-for="item in predefinedItems" :key="item.name" :value="item.name">
+                      {{ item.name }}
+                    </option>
+                    <option value="自訂">➕ 自訂項目...</option>
+                  </select>
+                  
+                  <div v-else class="flex items-center gap-1">
+                    <input 
+                      v-model="detail.itemName" 
+                      type="text" 
+                      required
+                      placeholder="請輸入自訂名稱" 
+                      class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-lotus-50" 
+                    />
+                    <button 
+                      type="button" 
+                      @click="detail.isCustom = false; detail.itemName = ''; detail.itemPrice = 0" 
+                      class="text-gray-400 hover:text-red-400 px-1" 
+                      title="返回選單"
+                    >✖</button>
+                  </div>
+                </td>
+                
+                <td class="py-3 pr-2">
+                  <input v-model.number="detail.itemPrice" type="number" required placeholder="單價" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400" />
+                </td>
+                
+                <td class="py-3 pr-2">
+                  <input v-model.number="detail.quantity" type="number" required class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400" />
+                </td>
                 
                 <td class="py-3 pr-2">
                   <select v-model="detail.discountType" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-white">
@@ -164,7 +209,15 @@
                 
                 <td class="py-3 pr-2">
                   <div v-if="detail.discountType === 'R'">
-                    <input v-model.number="detail.discountRate" type="number" max="1" min="0" step="0.01" placeholder="如: 0.9 (九折)" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-lotus-50" />
+                    <input 
+                      v-model.number="detail.discountRate" 
+                      type="number" 
+                      max="1" 
+                      min="0" 
+                      step="0.01" 
+                      placeholder="如: 0.9 (九折)" 
+                      class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-lotus-50" 
+                    />
                   </div>
                   <div v-else-if="detail.discountType === 'A'">
                     <input v-model.number="detail.discountPrice" type="number" min="0" placeholder="如: 100" class="w-full px-2 py-1.5 border rounded outline-none focus:border-lotus-400 bg-lotus-50" />
@@ -213,11 +266,25 @@
 
 <script setup>
 import { ref } from 'vue'
-import transaction from '@/utils/transaction'
+import transaction from '@/utils/transaction' 
+import { VueDatePicker } from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+
+// 預設收費品項與價格清單
+const predefinedItems = [
+  { name: '睫毛雨衣(黑)', price: 500 },
+  { name: '睫毛雨衣(透明)', price: 450 },
+  { name: '嫁接', price: 1200 },
+  { name: '卸睫', price: 500 }
+]
+
+// 取得現在時間，並自動歸零到「整點」作為 Datepicker 的預設值
+const defaultDate = new Date()
+defaultDate.setMinutes(0, 0, 0)
 
 const formData = ref({
   memberId: Number(new URLSearchParams(window.location.search).get('memberId')) || null,
-  transactionTime: new Date().toISOString().slice(0, 16),
+  transactionTime: defaultDate,
   lashArtist: 'Ava',
   paymentMethod: '現金',
   remark: '',
@@ -230,7 +297,6 @@ const formData = ref({
 // === 動態操作方法 ===
 const addOperation = () => {
   formData.value.operationItems.push({
-    // 預設為空字串，強迫使用者使用下拉選單
     operationName: '', style: '', thickness: '', brand: '', glueType: '', 
     totalLashCount: 0, category: '一般', remark: '',
     eyelashAreaDetail: []
@@ -245,24 +311,46 @@ const addArea = (opIndex) => {
 }
 const removeArea = (opIndex, areaIndex) => formData.value.operationItems[opIndex].eyelashAreaDetail.splice(areaIndex, 1)
 
+// 新增收費明細時，加上 isCustom 屬性來控制畫面切換
 const addTransactionDetail = () => {
   formData.value.transactionDetails.push({
     itemName: '', itemPrice: 0, quantity: 1, 
     discountType: 'N', // 預設無折扣
-    discountRate: 1, discountPrice: 0
+    discountRate: 1, discountPrice: 0,
+    isCustom: false // 標記是否為自訂模式
   })
 }
 const removeTransactionDetail = (index) => formData.value.transactionDetails.splice(index, 1)
 
+// 下拉選單改變時的邏輯：如果選自訂，就變身成輸入框
+const handleItemChange = (detail) => {
+  if (detail.itemName === '自訂') {
+    detail.isCustom = true   // 畫面切換為輸入框
+    detail.itemName = ''     // 清空字串讓使用者自己輸入
+    detail.itemPrice = 0     // 價格歸零讓使用者自己填
+  } else {
+    // 如果選了預設項目，自動帶入單價
+    const selected = predefinedItems.find(item => item.name === detail.itemName)
+    if (selected) {
+      detail.itemPrice = selected.price
+    }
+  }
+}
 
 // === 送出處理 ===
 const handleSubmit = async () => {
+  if (!formData.value.transactionTime || !formData.value.lashArtist || !formData.value.paymentMethod) {
+    alert('請填寫所有必填欄位')
+    return
+  }
   if (formData.value.transactionDetails.length === 0) {
     alert('請至少新增一筆收費明細')
     return
   }
   const payload = JSON.parse(JSON.stringify(formData.value))
-  payload.transactionTime = new Date(payload.transactionTime).toISOString()
+  
+  // 送出前，把 Date 物件轉換成後端要的 ISO 格式字串
+  payload.transactionTime = formData.value.transactionTime.toISOString()
 
   // 整理陣列資料 & 清除無用的折扣值
   payload.operationItems.forEach(op => {
@@ -276,6 +364,9 @@ const handleSubmit = async () => {
 
   // 確保傳給後端的資料乾淨 (選 N 的時候把 rate 跟 price 歸零)
   payload.transactionDetails.forEach(detail => {
+    // 送出前，把輔助畫面的 isCustom 屬性刪掉，不讓後端收到不需要的資料
+    delete detail.isCustom
+
     if (detail.discountType === 'N') {
       detail.discountRate = 1
       detail.discountPrice = 0
@@ -286,12 +377,17 @@ const handleSubmit = async () => {
     }
   })
 
-  const res = await transaction.createTransaction(payload)
-  if (res) {
-    alert('交易新增成功！')
-    // 新增成功後導回會員交易頁
-    window.location.href = `/transaction?memberId=${formData.value.memberId}`
-  } else {
+  try {
+    const res = await transaction.createTransaction(payload)
+    if (res) {
+      alert('交易新增成功！')
+      // 新增成功後導回會員交易頁
+      window.location.href = `/transaction?memberId=${formData.value.memberId}`
+    } else {
+      alert('交易新增失敗，請確認資料後重試。')
+    }
+  } catch (error) {
+    console.error('API 錯誤:', error)
     alert('交易新增失敗！')
   }
 }
