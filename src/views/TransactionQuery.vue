@@ -152,7 +152,7 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import transaction from '../utils/transaction'
 import PageTitle from '@/components/common/PageTitle.vue'
 import SearchBar from '@/components/common/SearchBar.vue'
@@ -162,9 +162,19 @@ const hasSearched = ref(false)
 const details = ref(null)
 
 const getTransactionById = async () => {
-  const res = await transaction.getTransactionById(transactionId.value)
-  details.value = res ? res : null
-  hasSearched.value = true
+  if (!transactionId.value) return // 防呆：沒單號就不打 API
+  
+  loading.value = true // 開啟 loading 狀態
+  try {
+    const res = await transaction.getTransactionById(transactionId.value)
+    details.value = res ? res : null
+  } catch (error) {
+    console.error('查詢失敗:', error)
+    details.value = null
+  } finally {
+    loading.value = false
+    hasSearched.value = true
+  }
 }
 
 // 處理時間格式
@@ -179,4 +189,16 @@ const formatDiscount = (rate) => {
   if (!rate) return ''
   return Number((rate * 10).toFixed(1))
 }
+
+onMounted(() => {
+  // 解析網址列的 query string
+  const urlParams = new URLSearchParams(window.location.search)
+  const idFromUrl = urlParams.get('transactionId')
+  
+  // 如果網址有帶交易id，立刻觸發查詢
+  if (idFromUrl) {
+    transactionId.value = idFromUrl
+    getTransactionById()
+  }
+})
 </script>

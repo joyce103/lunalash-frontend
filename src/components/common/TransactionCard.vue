@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white p-6 rounded-2xl shadow-sm border border-lotus-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+  <div @click="navigateToTransactionDetail" class="bg-white p-6 rounded-2xl shadow-sm border border-lotus-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
     
     <div class="flex justify-between items-start mb-4">
       <div>
@@ -93,5 +93,10 @@ const formatTime = (timeString) => {
   const min = String(date.getMinutes()).padStart(2, '0')
   
   return `${yyyy}/${mm}/${dd} ${hh}:${min}`
+}
+
+// 導向交易明細頁面
+const navigateToTransactionDetail = () => {
+  location.href = `/transactionQuery?transactionId=${props.transaction.transactionId}`
 }
 </script>
