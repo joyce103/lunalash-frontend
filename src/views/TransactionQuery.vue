@@ -44,7 +44,7 @@
         <h4 class="text-lotus-600 font-bold mb-4 flex items-center gap-2">
           施作紀錄與眼型配置
         </h4>
-        <div class="overflow-x-auto rounded-xl border border-lotus-100">
+        <div class="rounded-xl border border-lotus-100">
           <table class="w-full text-left text-sm whitespace-nowrap">
             <thead class="bg-lotus-100/50 text-lotus-700">
               <tr>
@@ -89,7 +89,7 @@
         <h4 class="text-lotus-600 font-bold mb-4 flex items-center gap-2">
           <span>🧾</span> 結帳明細
         </h4>
-        <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+        <div class="rounded-xl border border-gray-200 bg-white">
           <table class="w-full text-left text-sm whitespace-nowrap">
             <thead class="bg-gray-100 text-gray-600">
               <tr>

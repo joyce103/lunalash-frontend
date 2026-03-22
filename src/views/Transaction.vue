@@ -18,6 +18,10 @@
       />
     </div>
 
+    <div v-else class="text-center text-lotus-400 py-8 animate-pulse">
+      尚無相關交易資料。
+    </div>
+
   </div>
 </template>
 <script setup>
