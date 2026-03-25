@@ -3,28 +3,80 @@
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         
-        <div class="flex-shrink-0 flex items-center cursor-pointer">
+        <router-link to="/" class="flex-shrink-0 flex items-center cursor-pointer">
           <span class="text-2xl font-bold text-lotus-600 tracking-widest">LumeLash</span>
-        </div>
+        </router-link>
 
-        <div class="flex space-x-6 items-center">
-          <a href="/home" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+        <div class="flex items-center space-x-6">
+          <router-link to="/" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
             首頁
-          </a>
-          <a href="/about" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+          </router-link>
+          <router-link to="/about" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
             關於 LumeLash
-          </a>
+          </router-link>
           
-          <a href="/member" class="ml-4 px-5 py-2 rounded-full bg-lotus-50 text-lotus-600 border border-lotus-200 hover:bg-lotus-100 hover:shadow-sm font-medium text-sm transition-all duration-200">
+          <div v-if="isLoggedIn" class="flex items-center gap-4 ml-4">
+            <span class="text-sm text-gray-700 font-medium">
+              歡迎，<span class="text-lotus-600">{{ userName }}</span>
+            </span>
+            <button 
+              @click="handleLogout"
+              class="px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-600 border border-gray-200 hover:border-red-200 transition-all duration-200"
+            >
+              登出
+            </button>
+          </div>
+
+          <router-link 
+            v-else
+            to="/member" 
+            class="ml-4 px-5 py-2 rounded-full bg-lotus-50 text-lotus-600 border border-lotus-200 hover:bg-lotus-100 hover:shadow-sm font-medium text-sm transition-all duration-200"
+          >
             查詢會員
-          </a>
-        </div>
+          </router-link>
+
+          </div>
         
       </div>
     </div>
   </nav>
+  <div class="h-16"></div>
 </template>
-
 <script setup>
-// 目前先專注在畫面排版，未來我們可以把 href="#" 換成 Vue Router 的 <router-link>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+// 💡 提示：引入你之前寫的 auth.js 工具，用來統一處理登出
+// import auth from '@/utils/auth'
+
+const router = useRouter()
+const isLoggedIn = ref(false)
+const userName = ref('')
+
+// 元件掛載時，檢查 LocalStorage
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    isLoggedIn.value = true
+    // 取得使用者名稱，如果沒有就顯示預設值
+    userName.value = localStorage.getItem('userName') || '使用者'
+  }
+})
+
+// 登出邏輯
+const handleLogout = () => {
+  // 1. 清除 LocalStorage (如果你有寫 auth.logout() 可以直接呼叫)
+  localStorage.removeItem('token')
+  localStorage.removeItem('userName')
+  // 如果有引入 auth.js：
+  // auth.logout() 
+
+  // 2. 更新畫面狀態
+  isLoggedIn.value = false
+  userName.value = ''
+
+  console.log('已登出')
+
+  // 3. 跳轉至首頁或登入頁 (依需求調整)
+  router.push('/') 
+}
 </script>
