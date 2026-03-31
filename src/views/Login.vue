@@ -67,23 +67,16 @@ const handleLogin = async () => {
   if (!loginForm.username || !loginForm.password) return
 
   loading.value = true
-  try {
-    // 1. 呼叫 API 取得資料
-    const resultData = await auth.login(loginForm)
-    
-    // 2. 將 Token 與使用者名稱存入 LocalStorage
-    localStorage.setItem('token', resultData.token)
-    localStorage.setItem('userName', resultData.name)
-
-    console.log('登入成功，歡迎：', resultData.name)
-    
-    // 3. 跳轉至會員查詢頁 (請依據你 router.js 裡的設定調整 name 或 path)
-    router.push({ name: 'MemberQuery' }) 
-    
-  } catch (error) {
-    console.error('登入失敗', error)
-  } finally {
+  // 呼叫 API 取得資料
+  const result = await auth.login(loginForm)
+  // 登入失敗即返回
+  if (!result) {
+    loginForm.username = ''
+    loginForm.password = ''
     loading.value = false
+    return
   }
+  
+  router.push('/about')
 }
 </script>

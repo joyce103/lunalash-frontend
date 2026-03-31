@@ -43,40 +43,24 @@
   <div class="h-16"></div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-// 💡 提示：引入你之前寫的 auth.js 工具，用來統一處理登出
-// import auth from '@/utils/auth'
+import { isLoggedIn, userName, setAuthState } from '@/stores/authState'
 
 const router = useRouter()
-const isLoggedIn = ref(false)
-const userName = ref('')
-
-// 元件掛載時，檢查 LocalStorage
-onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    isLoggedIn.value = true
-    // 取得使用者名稱，如果沒有就顯示預設值
-    userName.value = localStorage.getItem('userName') || '使用者'
-  }
-})
 
 // 登出邏輯
 const handleLogout = () => {
-  // 1. 清除 LocalStorage (如果你有寫 auth.logout() 可以直接呼叫)
+  // 清除 LocalStorage
   localStorage.removeItem('token')
   localStorage.removeItem('userName')
-  // 如果有引入 auth.js：
-  // auth.logout() 
+  // auth.logout()
 
-  // 2. 更新畫面狀態
-  isLoggedIn.value = false
-  userName.value = ''
+  // 更新全域狀態為「未登入」
+  setAuthState(false, '')
 
   console.log('已登出')
 
-  // 3. 跳轉至首頁或登入頁 (依需求調整)
+  // 跳轉至登入頁
   router.push('/') 
 }
 </script>

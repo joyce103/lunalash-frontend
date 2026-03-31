@@ -1,4 +1,5 @@
 import api from './api';
+import { setAuthState } from '@/stores/authState';
 
 export default {
   /**
@@ -11,13 +12,12 @@ export default {
 async login(data) {
     try {
       const response = await api.post('/api/auth/login', data);
-      
       if (response.resultData?.token) {
         localStorage.setItem('token', response.resultData.token);
         localStorage.setItem('userName', response.resultData.name || '');
+        setAuthState(true, response.resultData.name);
         return true;
       }
-      
       return false;
 
     } catch (error) {

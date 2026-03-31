@@ -26,4 +26,24 @@ api.interceptors.request.use(
   }
 );
 
+// Response 攔截器：處理後端回傳的資料
+api.interceptors.response.use(
+  (response) => {
+    const res = response.data;
+    return res;
+  },
+  (error) => {
+    // 處理 HTTP 層級的錯誤 (例如 401 未授權, 404, 500)
+    if (error.response && error.response.status === 401) {
+      alert('登入已過期，請重新登入');
+      // 這裡可以加上清除 Token 與導向登入頁的邏輯
+      localStorage.removeItem('token');
+      window.location.href = '/';
+    } else {
+      alert('網路異常或伺服器無回應');
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
