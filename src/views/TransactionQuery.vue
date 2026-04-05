@@ -107,11 +107,11 @@
                 <td class="px-4 py-3 text-right text-gray-600">x {{ detail.quantity }}</td>
                 <td class="px-4 py-3 text-right">
                   <span v-if="detail.discountType" class="text-s bg-lotus-100 text-lotus-600 px-2 py-1 rounded">
-                    {{ detail.discountType }} (-${{ detail.discountPrice }})
+                    {{ detail.discountType }} (-${{ (detail.itemPrice - detail.actualPrice)*detail.quantity }})
                   </span>
                   <span v-else class="text-gray-400">-</span>
                 </td>
-                <td class="px-4 py-3 text-right font-bold text-gray-700">${{ detail.actualPrice }}</td>
+                <td class="px-4 py-3 text-right font-bold text-gray-700">${{ detail.actualPrice*detail.quantity }}</td>
               </tr>
             </tbody>
           </table>
