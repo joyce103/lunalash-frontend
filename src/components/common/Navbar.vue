@@ -8,8 +8,11 @@
         </router-link>
 
         <div class="flex items-center space-x-6">
-          <router-link to="/" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+          <router-link v-if="!isLoggedIn" to="/" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
             首頁
+          </router-link>
+          <router-link v-else to="/member" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+            會員查詢
           </router-link>
           <router-link to="/about" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
             關於 LumeLash
@@ -29,10 +32,10 @@
 
           <router-link 
             v-else
-            to="/member" 
+            to="/" 
             class="ml-4 px-5 py-2 rounded-full bg-lotus-50 text-lotus-600 border border-lotus-200 hover:bg-lotus-100 hover:shadow-sm font-medium text-sm transition-all duration-200"
           >
-            查詢會員
+            登入 / 註冊
           </router-link>
 
           </div>
