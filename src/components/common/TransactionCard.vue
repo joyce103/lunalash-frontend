@@ -44,7 +44,7 @@
       </div>
 
       <button 
-        @click="handleDelete" 
+        @click.stop="handleDelete" 
         class="shrink-0 text-s text-red-400 hover:text-red-600 hover:bg-red-50 px-3 py-2 rounded-md transition-colors flex items-center gap-1 cursor-pointer"
         title="刪除此筆交易"
       >
