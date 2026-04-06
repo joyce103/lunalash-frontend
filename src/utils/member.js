@@ -34,10 +34,11 @@ const member = {
         return true
       } else {
         alert('會員資料新增失敗: ' + res.resultMsg)
+        return false
       }
     } catch (error) {
       console.error(error)
-      return null
+      return false
     }
   },
   // 編輯會員資料
@@ -46,13 +47,14 @@ const member = {
       const res = await api.put('/member/updateMember', postData)
       if (res.resultCode === 0) {
         alert('會員資料更新成功！')
-        return true
+        return res.resultData
       } else {
         alert('會員資料更新失敗: ' + res.resultMsg)
+        return false
       }
     } catch (error) {
       console.error(error)
-      return null
+      return false
     }
   },
 

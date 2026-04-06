@@ -78,10 +78,6 @@ const handleSearch = async () => {
 // 新增會員
 const isModalOpen = ref(false)
 const currentEditingMember = ref(null) // null 代表新增
-const openCreateModal = () => {
-  currentEditingMember.value = null // 清空舊資料
-  isModalOpen.value = true
-}
 
 // 編輯會員
 const openEditModal = (member) => {
@@ -91,11 +87,16 @@ const openEditModal = (member) => {
 
 // 接收子元件傳回來的表單資料
 const handleFormSubmit = async (formData) => {
-  if (formData.memberId) {
-    const res = await member.updateMember(formData);
-  } else {
-    const res = await member.addMember(formData);
-  }
+  // 根據有沒有 memberId 來決定要打新增還是編輯 API
+  const res = formData.memberId ? await member.updateMember(formData) : await member.addMember(formData);
+  // 更新失敗直接返回
+  if (!res) return
+  // 將更新完的資料寫回畫面 避免重新打API
+  memberList.value.forEach((m, index) => {
+    if (m.memberId === res.memberId) {
+      memberList.value[index] = res
+    }
+  })
 }
 
 // 查詢所有會員
