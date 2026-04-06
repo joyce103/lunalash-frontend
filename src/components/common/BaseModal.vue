@@ -6,7 +6,7 @@
         class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/40 backdrop-blur-sm px-4"
         @click.self="closeModal"
       >
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform transition-all">
+        <div :class="['bg-white rounded-xl shadow-lg w-full rounded-2xl shadow-xl overflow-hidden transform transition-all', maxWidth]">
           
           <div class="px-6 py-4 border-b border-lotus-100 flex justify-between items-center bg-lotus-50/50">
             <h3 class="text-lg font-bold text-lotus-600">{{ title }}</h3>
@@ -30,7 +30,11 @@
 <script setup>
 defineProps({
   isOpen: { type: Boolean, required: true },
-  title: { type: String, default: '提示' }
+  title: { type: String, default: '提示' },
+  maxWidth: { // 設定彈窗寬度參數 預設約 512px
+    type: String,
+    default: 'max-w-lg' 
+  }
 })
 
 const emit = defineEmits(['close'])

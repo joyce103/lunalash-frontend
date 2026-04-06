@@ -34,6 +34,7 @@
         <p class="flex items-center gap-2"><span>📅</span> 加入：{{ formatDate(member.createdAt) }}</p>
         <p class="flex items-center gap-2"><span>🎂</span> 生日：{{ formatDate(member.birthday) }}</p>
         <p class="flex items-center gap-2"><span>📅</span> 最近消費：{{ member.updatedAt }}</p>
+        <p v-if="member.isTermsAgreed" class="flex items-center gap-2"><span>📅</span> 服務條款：{{ member.termsAgreedTime }}</p>
       </div>
 
       <div class="flex gap-3 mt-auto">
@@ -63,7 +64,7 @@ const props = defineProps({
   }
 })
 
-// 🚀 定義要對外發送的事件
+// 定義要對外發送的事件
 const emit = defineEmits(['edit'])
 
 // 處理編輯按鈕點擊

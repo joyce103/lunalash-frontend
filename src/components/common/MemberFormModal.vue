@@ -1,8 +1,8 @@
 <template>
-  <BaseModal :isOpen="isOpen" :title="isEditMode ? '編輯會員資料' : '新增會員資料'" @close="handleClose">
+  <BaseModal :isOpen="isOpen" :title="isEditMode ? '編輯會員資料' : '新增會員資料'" maxWidth="max-w-3xl" @close="handleClose">
     <form @submit.prevent="handleSubmit" class="space-y-6">
       
-      <div class="grid grid-cols-1 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         
         <div v-if="isEditMode" class="sm:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">會員編號</label>
@@ -86,6 +86,10 @@
 
       </div>
 
+      <div class="mt-2">
+        <TermsAgreement v-model="formData.isTermsAgreed" />
+      </div>
+
       <div class="pt-4 flex justify-end gap-3 border-t border-lotus-100 mt-6">
         <button 
           type="button" 
@@ -96,7 +100,7 @@
         </button>
         <button 
           type="submit" 
-          :disabled="isSubmitting"
+          :disabled="isSubmitting || !formData.isTermsAgreed"
           class="px-5 py-2 bg-lotus-400 hover:bg-lotus-500 disabled:bg-lotus-300 text-white rounded-xl font-medium shadow-sm transition-colors text-sm"
         >
           {{ isSubmitting ? '儲存中...' : (isEditMode ? '確認修改' : '確認新增') }}
@@ -110,6 +114,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/common/BaseModal.vue'
+import TermsAgreement from '@/components/common/TermsAgreement.vue'
 
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
@@ -129,7 +134,8 @@ const defaultForm = {
   gender: '',
   birthday: '',
   memberLevel: '',
-  lineId: ''
+  lineId: '',
+  isTermsAgreed: false
 }
 
 const formData = ref({ ...defaultForm })
