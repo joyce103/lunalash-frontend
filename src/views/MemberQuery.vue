@@ -57,9 +57,11 @@ const searchKeyword = ref('')
 const memberList = ref([])
 const loading = ref(false)
 const hasSearched = ref(false)
+const currentSearchPhone = ref('');
 // 手機查詢會員
 const handleSearch = async () => {
-  if (!searchKeyword.value.trim()) return
+  // 防呆：如果輸入的手機號碼跟目前搜尋的一樣，就不重複查詢了
+  if (!searchKeyword.value.trim() || searchKeyword.value.trim()===currentSearchPhone.value) return
 
   loading.value = true
   hasSearched.value = false
@@ -73,6 +75,8 @@ const handleSearch = async () => {
   } finally {
     loading.value = false
     hasSearched.value = true
+    currentSearchPhone.value = searchKeyword.value.trim();
+    isAllMemberMode.value = false
   }
 }
 // 新增會員
@@ -101,9 +105,14 @@ const handleFormSubmit = async (formData) => {
 
 // 查詢所有會員
 const hasAllMembers = ref(false)
+const isAllMemberMode = ref(false)
 const getAllMembers = async () => {
+  if (isAllMemberMode.value) return // 已經在所有會員模式就不重複查詢了
   const res = await member.getAllMembers()
   memberList.value = res || []
   hasAllMembers.value = true
+  isAllMemberMode.value = true
+  searchKeyword.value = '' // 清空搜尋框
+  currentSearchPhone.value = '' // 清空目前搜尋的手機號碼
 }
 </script>
