@@ -167,7 +167,7 @@ const getTransactionById = async () => {
   loading.value = true // 開啟 loading 狀態
   try {
     const res = await transaction.getTransactionById(transactionId.value)
-    details.value = res?.length > 0 ? res : null
+    details.value = res ? res : null
   } catch (error) {
     console.error('查詢失敗:', error)
     details.value = null
