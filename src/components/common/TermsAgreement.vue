@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-3 font-sans">
-    <label class="block text-sm font-medium text-gray-700">LumeLash 服務條款與隱私權政策</label>
+    <label class="block text-sm font-medium text-gray-700">LumeLash 諮詢記錄同意書 Agreement</label>
     
     <div class="relative border border-gray-200 rounded-xl bg-gray-50 overflow-hidden">
       <div 
@@ -8,10 +8,9 @@
         @scroll="handleScroll"
         class="h-56 overflow-y-auto p-5 text-sm text-gray-600 leading-relaxed custom-scrollbar"
       >
-        <h4 class="font-bold text-gray-800 mb-4 text-base">LumeLash 美睫服務同意書</h4>
-        
+        <!-- <h4 class="font-bold text-gray-800 mb-4 text-base">LumeLash 美睫服務同意書</h4> -->
         <div class="space-y-4">
-          <section>
+          <!-- <section>
             <h5 class="font-semibold text-lotus-600 mb-1">一、 預約與取消政策</h5>
             <p>1. 為保障雙方權益，預約保留 15 分鐘，逾時視同取消並可能影響未來預約權益。</p>
             <p>2. 若需更改時間或取消，請於預約時間 24 小時前主動告知。</p>
@@ -29,11 +28,15 @@
             <p>1. 施作後 4-6 小時內請盡量避免碰水、遠離高溫高濕環境（如溫泉、蒸氣室），以利黑膠完全固化。</p>
             <p>2. 洗臉時請避開含油性成分之卸妝產品，並輕柔按壓擦乾水分。</p>
             <p>3. 本店提供施作後 3 日內免費微調服務（非人為因素掉落），逾期將酌收補睫費用。</p>
-          </section>
+          </section> -->
 
           <section>
-            <h5 class="font-semibold text-lotus-600 mb-1">四、 個人資料保護</h5>
-            <p>本店收集之基本資料與眼型紀錄，僅供 LumeLash 內部建檔與後續服務參考使用，絕不外流或作其他商業用途。</p>
+            <h5 class="font-semibold text-lotus-600 mb-1">請詳閱以下各項目並完全同意下列之敘述者，若有不確定請詢問服務人員。</h5>
+            <p>1. 我同意接睫最後成果會因個人的睫毛生長、健康程度、濃密度和眼型而有所不同，所以無法加以保證及預見最後的呈現外觀為何，服務完成後故無法做任何退費要求。</p>
+            <p>2. 如果我本身有任何眼疾、過敏或動過眼部手術、紋繡服務，將會主動告知美睫師，並斟酌是否接受接睫服務，若接睫後因個人體質關係或後續衛生問題產生不適現象，服務店家可免責。</p>
+            <p>3. 我了解接睫操作過程可能會帶來潛在不適感，如流淚、些許紅眼或過敏現象。</p>
+            <p>4. 接受接睫後，會因個人體質、生活習慣關係與保養方式不同，睫毛脫落速度也不盡相同，故店家無法提供保固期。</p>
+            <p>5. 想卸除睫毛必須經由專業美睫師使用專業卸除產品與技術，任何自行卸除動作都會對真睫毛造成傷害。</p>
           </section>
         </div>
 
