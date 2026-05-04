@@ -11,6 +11,8 @@
       <BasicInfoSection v-model="formData" />
 
       <OperationSection v-model="formData.operationItems" />
+      
+      <ImageUploadSection v-model="formData.imageFiles" />
 
       <TransactionDetailSection v-model="formData.transactionDetails" />
 
@@ -33,8 +35,12 @@
         <button type="button" class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors">
           取消
         </button>
-        <button type="submit" class="px-8 py-3 bg-lotus-400 hover:bg-lotus-500 text-white rounded-xl font-bold shadow-md transition-all hover:-translate-y-0.5">
-          確認新增交易
+        <button 
+          type="submit" 
+          :disabled="isSubmitting"
+          class="px-8 py-3 bg-lotus-400 hover:bg-lotus-500 text-white rounded-xl font-bold shadow-md transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+        >
+          {{ isSubmitting ? '資料處理與上傳中...' : '確認新增交易' }}
         </button>
       </div>
 
@@ -45,12 +51,18 @@
 <script setup>
 import { ref } from 'vue'
 import transaction from '@/utils/transaction' 
+import imageApi from '@/utils/image' // 引入我們寫好的圖片 API
+
 import BasicInfoSection from '../components/form/BasicInfoSection.vue'
 import OperationSection from '../components/form/OperationSection.vue'
 import TransactionDetailSection from '../components/form/TransactionDetailSection.vue'
+import ImageUploadSection from '../components/form/ImageUploadSection.vue' // 引入圖片組件
 
 const defaultDate = new Date()
 defaultDate.setMinutes(0, 0, 0)
+
+// 控制送出按鈕狀態
+const isSubmitting = ref(false)
 
 const formData = ref({
   memberId: Number(new URLSearchParams(window.location.search).get('memberId')) || null,
@@ -59,11 +71,12 @@ const formData = ref({
   paymentMethod: '現金',
   remark: '',
   operationItems: [],
-  transactionDetails: []
+  transactionDetails: [],
+  imageFiles: [] // 用來裝 File 物件的陣列 (送出前會被剃除)
 })
 
-// === 送出處理 ===
 const handleSubmit = async () => {
+  // 基本防呆檢驗
   if (!formData.value.transactionTime || !formData.value.lashArtist || !formData.value.paymentMethod) {
     alert('請填寫所有必填欄位')
     return
@@ -72,37 +85,52 @@ const handleSubmit = async () => {
     alert('請至少新增一筆收費明細')
     return
   }
+  if (formData.value.operationItems.length === 0) {
+    alert('請至少新增一筆施作項目')
+    return
+  }
+
+  isSubmitting.value = true
   
-  // 深拷貝一份乾淨的 payload
-  const payload = JSON.parse(JSON.stringify(formData.value))
-  
-  // 時間格式轉換
-  payload.transactionTime = formData.value.transactionTime.toISOString()
-
-  // 整理陣列資料 & 清除無用的折扣值
-  payload.operationItems.forEach(op => {
-    op.eyelashAreaDetail.forEach(area => {
-      area.lashLengths = area._lengthsStr ? area._lengthsStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)) : []
-      area.lashCurls = area._curlsStr ? area._curlsStr.split(',').map(s => s.trim()).filter(s => s) : []
-      delete area._lengthsStr
-      delete area._curlsStr
-    })
-  })
-
-  payload.transactionDetails.forEach(detail => {
-    delete detail.isCustom
-    if (detail.discountType === 'N') {
-      detail.discountRate = 1
-      detail.discountPrice = 0
-    } else if (detail.discountType === 'A') {
-      detail.discountRate = 1 
-    } else if (detail.discountType === 'R') {
-      detail.discountPrice = 0 
-    }
-  })
-
-  // 打 API
   try {
+    // 步驟一：先上傳圖片，取得 Cloudinary 網址
+    const uploadedUrls = await imageApi.uploadMultipleImages(formData.value.imageFiles)
+
+    // 步驟二：深拷貝一份乾淨的 payload 給資料庫
+    const payload = JSON.parse(JSON.stringify(formData.value))
+    
+    // 刪除後端不需要的實體檔案陣列
+    delete payload.imageFiles 
+    
+    // 時間格式轉換
+    payload.transactionTime = formData.value.transactionTime.toISOString()
+
+    // 將圖片網址綁定到第一筆操作項目上 (對應後端的 OperationItemRequest.imageUrls)
+    payload.operationItems[0].imageUrls = uploadedUrls
+
+    // 整理陣列資料 & 清除無用的折扣值
+    payload.operationItems.forEach(op => {
+      op.eyelashAreaDetail.forEach(area => {
+        area.lashLengths = area._lengthsStr ? area._lengthsStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)) : []
+        area.lashCurls = area._curlsStr ? area._curlsStr.split(',').map(s => s.trim()).filter(s => s) : []
+        delete area._lengthsStr
+        delete area._curlsStr
+      })
+    })
+
+    payload.transactionDetails.forEach(detail => {
+      delete detail.isCustom
+      if (detail.discountType === 'N') {
+        detail.discountRate = 1
+        detail.discountPrice = 0
+      } else if (detail.discountType === 'A') {
+        detail.discountRate = 1 
+      } else if (detail.discountType === 'R') {
+        detail.discountPrice = 0 
+      }
+    })
+
+    // 步驟三：打 API 建立整筆交易
     const res = await transaction.createTransaction(payload)
     if (res) {
       alert('交易新增成功！')
@@ -112,7 +140,9 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error('API 錯誤:', error)
-    alert('交易新增失敗！')
+    alert(error.message || '交易新增失敗！')
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>

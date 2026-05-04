@@ -53,12 +53,25 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">生日 <span class="text-red-400">*</span></label>
-          <input 
+          <!-- <VueDatePicker 
+            v-model="formData.birthday" 
+            format="yyyy/MM/dd"
+            :clearable="false"
+            :enable-seconds="false"
+            auto-apply
+            input-class-name="w-full px-4 py-2 bg-lotus-50 border border-lotus-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-lotus-400 text-lotus-600 transition-colors"
+          /> -->
+          <VueDatePicker
+            v-model="formData.birthday"
+            :enable-time-picker="false"
+            format="yyyy-MM-dd"
+          />
+          <!-- <input 
             v-model="formData.birthday" 
             type="date" 
             required
             class="w-full px-4 py-2 bg-lotus-50 border border-lotus-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-lotus-400 text-lotus-600 transition-colors"
-          />
+          /> -->
         </div>
 
         <div>
@@ -115,6 +128,8 @@
 import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import TermsAgreement from '@/components/common/TermsAgreement.vue'
+import { VueDatePicker } from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
@@ -160,6 +175,10 @@ const handleClose = () => {
 }
 
 const handleSubmit = async () => {
+  if (formData.value) {
+    console.log('提交的表單資料:', formData.value)
+    return
+  }
   isSubmitting.value = true
   try {
     // 父元件可以透過檢查物件裡有沒有 memberId 來決定要打 POST(新增) 還是 PUT(修改) API
