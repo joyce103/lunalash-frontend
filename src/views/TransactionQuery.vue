@@ -85,6 +85,14 @@
         </div>
       </div>
 
+      <ImageGallery 
+        :images="allImages" 
+        title="施作照片紀錄" 
+        icon="📸" 
+        altText="睫毛施作照片" 
+        class="border-t border-lotus-100" 
+      />
+
       <div class="p-5 md:p-6 bg-gray-50/50 border-t border-lotus-100">
         <h4 class="text-lotus-600 font-bold mb-4 flex items-center gap-2">
           <span>🧾</span> 結帳明細
@@ -151,15 +159,24 @@
 
   </div>
 </template>
+
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import transaction from '../utils/transaction'
 import PageTitle from '@/components/common/PageTitle.vue'
 import SearchBar from '@/components/common/SearchBar.vue'
+import ImageGallery from '@/components/common/ImageGallery.vue'
+
 const transactionId = ref('')
 const loading = ref(false)
 const hasSearched = ref(false)
 const details = ref(null)
+
+// 使用 computed 將所有 operationItems 裡面的 imageUrls 收集成一個乾淨的陣列
+const allImages = computed(() => {
+  if (!details.value || !details.value.operationItems) return []
+  return details.value.operationItems.flatMap(op => op.imageUrls || [])
+})
 
 const getTransactionById = async () => {
   if (!transactionId.value) return // 防呆：沒單號就不打 API
