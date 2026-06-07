@@ -3,7 +3,8 @@ import axios from 'axios';
 
 // 建立 Axios 實體
 const api = axios.create({
-  baseURL: 'http://localhost:8080', 
+  // baseURL: 'http://localhost:8080', 
+  baseURL: '/api',
   timeout: 10000, // 請求超時時間 (10秒)
 });
 
