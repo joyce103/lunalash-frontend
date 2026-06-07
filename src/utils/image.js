@@ -23,7 +23,7 @@ export default {
       }
 
       // 呼叫後端 API
-      const response = await api.post('/api/images/upload-multiple', uploadData, {
+      const response = await api.post('/images/upload-multiple', uploadData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

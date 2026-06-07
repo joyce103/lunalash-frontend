@@ -11,7 +11,7 @@ export default {
    */
 async login(data) {
     try {
-      const response = await api.post('/api/auth/login', data);
+      const response = await api.post('/auth/login', data);
       if (response.resultData?.token) {
         localStorage.setItem('token', response.resultData.token);
         localStorage.setItem('userName', response.resultData.name || '');
