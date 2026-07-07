@@ -34,14 +34,28 @@ api.interceptors.response.use(
     return res;
   },
   (error) => {
-    // 處理 HTTP 層級的錯誤 (例如 401 未授權, 404, 500)
-    if (error.response && error.response.status === 401) {
-      alert('登入已過期，請重新登入');
-      // 這裡可以加上清除 Token 與導向登入頁的邏輯
+    // 完全沒有收到回應 (斷線、逾時、後端沒開)
+    if (!error.response) {
+      alert('網路異常或伺服器無回應，請稍後再試');
+      return Promise.reject(error);
+    }
+
+    const { status, data } = error.response;
+    const isLoginRequest = error.config?.url?.includes('/auth/login');
+
+    // 登入 API 本身回傳的 401 (帳號密碼錯誤) 交給呼叫端 (auth.js) 顯示訊息，
+    // 這裡不重複跳 alert，也不能當成「已登入過的 session 過期」去清 token、強制導頁
+    if (status === 401 && !isLoginRequest) {
+      alert(data?.resultMsg || '登入已過期，請重新登入');
       localStorage.removeItem('token');
+      localStorage.removeItem('userName');
       window.location.href = '/';
-    } else {
-      alert('網路異常或伺服器無回應');
+      return Promise.reject(error);
+    }
+
+    if (status !== 401) {
+      // 其他 HTTP 錯誤：優先顯示後端提供的訊息，讓使用者知道實際發生什麼事
+      alert(data?.resultMsg || `發生錯誤 (${status})，請稍後再試`);
     }
     return Promise.reject(error);
   }

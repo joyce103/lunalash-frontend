@@ -17,7 +17,10 @@
           <router-link to="/about" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
             關於 LumeLash
           </router-link>
-          
+          <router-link v-if="isLoggedIn" to="/account" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+            帳號管理
+          </router-link>
+
           <div v-if="isLoggedIn" class="flex items-center gap-4 ml-4">
             <span class="text-sm text-gray-700 font-medium">
               歡迎，<span class="text-lotus-600">{{ userName }}</span>
