@@ -6,6 +6,11 @@ import Transaction from '../views/Transaction.vue'
 import TransactionQuery from '../views/TransactionQuery.vue'
 import CreateTransactionForm from '../views/CreateTransactionForm.vue'
 import AccountManagement from '../views/AccountManagement.vue'
+import BookingPage from '../views/BookingPage.vue'
+import Dashboard from '../views/Dashboard.vue'
+import AppointmentManagement from '../views/AppointmentManagement.vue'
+import ServiceManagement from '../views/ServiceManagement.vue'
+import ScheduleManagement from '../views/ScheduleManagement.vue'
 import { isLoggedIn } from '@/stores/authState'
 
 const router = createRouter({
@@ -51,6 +56,35 @@ const router = createRouter({
       name: 'account',
       component: AccountManagement,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/booking',
+      name: 'booking',
+      component: BookingPage,
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: Dashboard,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/appointments',
+      name: 'appointments',
+      component: AppointmentManagement,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/serviceManagement',
+      name: 'serviceManagement',
+      component: ServiceManagement,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/scheduleManagement',
+      name: 'scheduleManagement',
+      component: ScheduleManagement,
+      meta: { requiresAuth: true },
     }
   ],
 })
@@ -61,7 +95,7 @@ router.beforeEach((to) => {
     return { path: '/' }
   }
   if (to.path === '/' && isLoggedIn.value) {
-    return { path: '/about' }
+    return { path: '/dashboard' }
   }
   return true
 })

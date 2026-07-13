@@ -17,6 +17,20 @@
           <router-link to="/about" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
             關於 LumeLash
           </router-link>
+          <router-link to="/booking" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+            線上預約
+          </router-link>
+          <template v-if="isLoggedIn">
+            <router-link to="/appointments" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+              預約管理
+            </router-link>
+            <router-link to="/scheduleManagement" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+              時段管理
+            </router-link>
+            <router-link to="/serviceManagement" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+              服務管理
+            </router-link>
+          </template>
           <router-link v-if="isLoggedIn" to="/account" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
             帳號管理
           </router-link>

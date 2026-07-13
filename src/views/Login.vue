@@ -77,6 +77,6 @@ const handleLogin = async () => {
     return
   }
   
-  router.push('/about')
+  router.push('/dashboard')
 }
 </script>
