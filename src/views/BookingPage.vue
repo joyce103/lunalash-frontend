@@ -3,7 +3,7 @@
 
     <PageTitle
       title="線上預約"
-      subtitle="選擇服務項目、日期與時段，填寫姓名電話即可完成預約"
+      subtitle="選擇操作項目、日期與時段，填寫姓名電話即可完成預約"
     />
 
     <!-- 送出成功後顯示確認訊息，其餘表單隱藏 -->
@@ -21,31 +21,35 @@
     </div>
 
     <template v-else>
-      <!-- 1. 選擇服務項目 -->
+      <!-- 1. 選擇操作項目 (可複選) -->
       <div class="bg-white p-6 rounded-2xl border border-lotus-100 shadow-sm space-y-4">
-        <h2 class="text-lg font-semibold text-gray-700">1. 選擇服務項目</h2>
-        <div v-if="services.length === 0" class="text-center py-6 text-lotus-400 text-sm">目前沒有可預約的服務項目</div>
+        <h2 class="text-lg font-semibold text-gray-700">1. 選擇操作項目（可複選）</h2>
+        <div v-if="operationItems.length === 0" class="text-center py-6 text-lotus-400 text-sm">目前沒有可預約的操作項目</div>
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
-            v-for="service in services"
-            :key="service.serviceItemId"
-            @click="selectService(service)"
+            v-for="item in operationItems"
+            :key="item.operationCatalogItemId"
+            @click="toggleItem(item)"
             :class="[
-              'px-4 py-3 rounded-xl border text-sm font-medium text-left transition-colors',
-              selectedService?.serviceItemId === service.serviceItemId
+              'px-4 py-3 rounded-xl border text-sm font-medium text-left transition-colors flex justify-between items-center gap-2',
+              selectedItemIds.has(item.operationCatalogItemId)
                 ? 'bg-lotus-400 border-lotus-400 text-white'
                 : 'bg-white border-gray-200 text-gray-700 hover:border-lotus-300'
             ]"
           >
-            {{ service.name }}
+            <span>{{ item.name }}</span>
+            <span class="text-xs opacity-80 whitespace-nowrap">{{ item.durationMinutes }} 分鐘</span>
           </button>
         </div>
+        <p v-if="selectedItemIds.size > 0" class="text-xs text-lotus-500">
+          已選擇 {{ selectedItemIds.size }} 項，共 {{ totalDurationMinutes }} 分鐘（將占用 {{ occupiedSlotCount }} 個時段）
+        </p>
       </div>
 
       <!-- 2. 選擇日期 -->
       <div class="bg-white p-6 rounded-2xl border border-lotus-100 shadow-sm space-y-4">
         <h2 class="text-lg font-semibold text-gray-700">2. 選擇日期</h2>
-        <p v-if="!selectedService" class="text-xs text-lotus-400">請先選擇服務項目，才能選擇日期</p>
+        <p v-if="selectedItemIds.size === 0" class="text-xs text-lotus-400">請先選擇操作項目，才能選擇日期</p>
 
         <div>
           <div class="flex items-center justify-between mb-3">
@@ -62,12 +66,12 @@
             <button
               v-for="day in daysInMonth"
               :key="day.date"
-              :disabled="!selectedService || !day.isOpen || day.isPast"
+              :disabled="selectedItemIds.size === 0 || !day.isOpen || day.isPast"
               @click="selectDate(day.date)"
               :class="[
                 'aspect-square rounded-lg text-sm flex items-center justify-center transition-colors',
                 selectedDate === day.date ? 'bg-lotus-400 text-white font-bold' :
-                (selectedService && day.isOpen && !day.isPast) ? 'bg-lotus-50 text-lotus-600 hover:bg-lotus-100' : 'text-gray-300'
+                (selectedItemIds.size > 0 && day.isOpen && !day.isPast) ? 'bg-lotus-50 text-lotus-600 hover:bg-lotus-100' : 'text-gray-300'
               ]"
             >
               {{ day.day }}
@@ -160,8 +164,16 @@ import { ref, computed, onMounted, watch } from 'vue'
 import booking from '@/utils/booking'
 import PageTitle from '@/components/common/PageTitle.vue'
 
-const services = ref([])
-const selectedService = ref(null)
+const operationItems = ref([])
+const selectedItemIds = ref(new Set())
+
+const totalDurationMinutes = computed(() => {
+  return operationItems.value
+    .filter((item) => selectedItemIds.value.has(item.operationCatalogItemId))
+    .reduce((sum, item) => sum + item.durationMinutes, 0)
+})
+// 固定時段是每小時一個，時間加總無條件進位換算成要占用幾個時段，要跟後端 AvailableSlotService 的邏輯保持一致
+const occupiedSlotCount = computed(() => Math.ceil(totalDurationMinutes.value / 60))
 
 const today = new Date()
 const currentYear = ref(today.getFullYear())
@@ -200,9 +212,9 @@ const phoneError = computed(() => {
   return ''
 })
 
-// 選完服務/日期/時段就可以點送出；姓名電話的格式錯誤在送出時用行內錯誤訊息呈現，而不是讓按鈕一直無法點擊卻不說明原因
+// 選完操作項目/日期/時段就可以點送出；姓名電話的格式錯誤在送出時用行內錯誤訊息呈現，而不是讓按鈕一直無法點擊卻不說明原因
 const canAttemptSubmit = computed(() =>
-  selectedService.value && selectedDate.value && selectedTime.value
+  selectedItemIds.value.size > 0 && selectedDate.value && selectedTime.value
 )
 
 const todayStr = formatDate(today)
@@ -248,16 +260,29 @@ const changeMonth = (delta) => {
   slots.value = []
 }
 
-const selectService = (service) => {
-  selectedService.value = service
+const toggleItem = (item) => {
+  const next = new Set(selectedItemIds.value)
+  if (next.has(item.operationCatalogItemId)) {
+    next.delete(item.operationCatalogItemId)
+  } else {
+    next.add(item.operationCatalogItemId)
+  }
+  selectedItemIds.value = next
+  // 選擇的項目變了，時間加總也會變，已經選過的日期要重新查一次時段狀態
+  if (selectedDate.value) selectDate(selectedDate.value)
+}
+
+const loadSlots = async () => {
+  if (!selectedDate.value || selectedItemIds.value.size === 0) return
+  loadingSlots.value = true
+  slots.value = await booking.getAvailableSlots(selectedDate.value, [...selectedItemIds.value])
+  loadingSlots.value = false
 }
 
 const selectDate = async (date) => {
   selectedDate.value = date
   selectedTime.value = ''
-  loadingSlots.value = true
-  slots.value = await booking.getAvailableSlots(date)
-  loadingSlots.value = false
+  await loadSlots()
 }
 
 const handleSubmit = async () => {
@@ -270,7 +295,7 @@ const handleSubmit = async () => {
 
   submitting.value = true
   const result = await booking.createAppointment({
-    serviceId: selectedService.value.serviceItemId,
+    operationItemIds: [...selectedItemIds.value],
     date: selectedDate.value,
     time: selectedTime.value,
     customerName: customerName.value.trim(),
@@ -289,7 +314,7 @@ const handleSubmit = async () => {
 
 const resetForm = () => {
   submitted.value = false
-  selectedService.value = null
+  selectedItemIds.value = new Set()
   selectedDate.value = ''
   selectedTime.value = ''
   slots.value = []
@@ -302,7 +327,7 @@ const resetForm = () => {
 watch([currentYear, currentMonth], loadCalendar)
 
 onMounted(async () => {
-  services.value = await booking.getServices()
+  operationItems.value = await booking.getOperationCatalogItems()
   await loadCalendar()
 })
 </script>

@@ -11,6 +11,7 @@ import Dashboard from '../views/Dashboard.vue'
 import AppointmentManagement from '../views/AppointmentManagement.vue'
 import ServiceManagement from '../views/ServiceManagement.vue'
 import ScheduleManagement from '../views/ScheduleManagement.vue'
+import OperationCatalogManagement from '../views/OperationCatalogManagement.vue'
 import { isLoggedIn } from '@/stores/authState'
 
 const router = createRouter({
@@ -84,6 +85,12 @@ const router = createRouter({
       path: '/scheduleManagement',
       name: 'scheduleManagement',
       component: ScheduleManagement,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/operationCatalogManagement',
+      name: 'operationCatalogManagement',
+      component: OperationCatalogManagement,
       meta: { requiresAuth: true },
     }
   ],

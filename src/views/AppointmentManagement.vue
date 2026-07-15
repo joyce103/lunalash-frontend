@@ -44,7 +44,7 @@
           <tr>
             <th class="px-4 py-3 font-medium">姓名</th>
             <th class="px-4 py-3 font-medium">電話</th>
-            <th class="px-4 py-3 font-medium">服務</th>
+            <th class="px-4 py-3 font-medium">操作項目</th>
             <th class="px-4 py-3 font-medium">日期</th>
             <th class="px-4 py-3 font-medium">時間</th>
             <th class="px-4 py-3 font-medium">建立時間</th>
@@ -56,9 +56,12 @@
           <tr v-for="a in appointments" :key="a.appointmentId" class="hover:bg-lotus-50/30">
             <td class="px-4 py-3">{{ a.customerName }}</td>
             <td class="px-4 py-3">{{ a.customerPhone }}</td>
-            <td class="px-4 py-3">{{ a.serviceName }}</td>
+            <td class="px-4 py-3">
+              <div>{{ a.operationItems?.map(i => i.name).join('、') }}</div>
+              <div class="text-xs text-gray-400">共 {{ a.totalDurationMinutes }} 分鐘</div>
+            </td>
             <td class="px-4 py-3">{{ a.date }}</td>
-            <td class="px-4 py-3">{{ a.time?.slice(0, 5) }}</td>
+            <td class="px-4 py-3">{{ formatTimeRange(a.time, a.totalDurationMinutes) }}</td>
             <td class="px-4 py-3 text-gray-400">{{ formatDateTime(a.createdAt) }}</td>
             <td class="px-4 py-3">
               <span :class="statusBadgeClass(a.status)">{{ statusLabel(a.status) }}</span>
@@ -141,6 +144,16 @@ const formatDateTime = (value) => {
   if (!value) return '-'
   const d = new Date(value)
   return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+// 現在一筆預約可能因為操作項目時間加總橫跨好幾個固定時段，這裡顯示開始~結束時間比較清楚
+const formatTimeRange = (time, totalDurationMinutes) => {
+  if (!time) return '-'
+  const [h, m] = time.split(':').map(Number)
+  const start = new Date(2000, 0, 1, h, m)
+  const end = new Date(start.getTime() + (totalDurationMinutes || 0) * 60000)
+  const fmt = (d) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  return `${fmt(start)}-${fmt(end)}`
 }
 
 onMounted(handleSearch)

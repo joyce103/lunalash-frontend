@@ -30,6 +30,9 @@
             <router-link to="/serviceManagement" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
               服務管理
             </router-link>
+            <router-link to="/operationCatalogManagement" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
+              操作項目管理
+            </router-link>
           </template>
           <router-link v-if="isLoggedIn" to="/account" class="text-gray-500 hover:text-lotus-500 px-3 py-2 text-sm font-medium transition-colors duration-200">
             帳號管理

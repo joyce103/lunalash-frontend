@@ -116,6 +116,44 @@ const adminBooking = {
     }
   },
 
+  // ===== 操作項目管理 =====
+  async getAllOperationCatalogItems() {
+    try {
+      const res = await api.get('/admin/operation-catalog')
+      return res?.resultCode === 0 && res.resultData ? res.resultData : []
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  },
+  async createOperationCatalogItem(postData) {
+    try {
+      const res = await api.post('/admin/operation-catalog', postData)
+      if (res.resultCode === 0) return { success: true }
+      return { success: false, message: res.resultMsg }
+    } catch (error) {
+      return { success: false, message: error.response?.data?.resultMsg || '新增失敗，請稍後再試' }
+    }
+  },
+  async updateOperationCatalogItem(operationCatalogItemId, postData) {
+    try {
+      const res = await api.put(`/admin/operation-catalog/${operationCatalogItemId}`, postData)
+      if (res.resultCode === 0) return { success: true }
+      return { success: false, message: res.resultMsg }
+    } catch (error) {
+      return { success: false, message: error.response?.data?.resultMsg || '更新失敗，請稍後再試' }
+    }
+  },
+  async deleteOperationCatalogItem(operationCatalogItemId) {
+    try {
+      const res = await api.delete(`/admin/operation-catalog/${operationCatalogItemId}`)
+      if (res.resultCode === 0) return { success: true }
+      return { success: false, message: res.resultMsg }
+    } catch (error) {
+      return { success: false, message: error.response?.data?.resultMsg || '刪除失敗，請稍後再試' }
+    }
+  },
+
   // ===== 時段管理 =====
   async getSlotConfig(date) {
     try {
