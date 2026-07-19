@@ -92,7 +92,10 @@ import { ref, onMounted } from 'vue'
 import adminBooking from '@/utils/adminBooking'
 import PageTitle from '@/components/common/PageTitle.vue'
 
-const filters = ref({ name: '', phone: '', date: '', status: '' })
+// 支援從外部帶 ?date=yyyy-MM-dd 進來直接篩選 (例如從儀表板月曆點某一天過來)
+const initialDate = new URLSearchParams(window.location.search).get('date') || ''
+
+const filters = ref({ name: '', phone: '', date: initialDate, status: '' })
 const appointments = ref([])
 const loading = ref(false)
 

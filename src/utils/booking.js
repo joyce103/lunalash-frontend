@@ -1,16 +1,6 @@
 import api from './api'
 
 const booking = {
-  // 查詢所有啟用中的服務項目 (訪客用，完全公開)
-  async getServices() {
-    try {
-      const res = await api.get('/services')
-      return res?.resultCode === 0 && res.resultData ? res.resultData : []
-    } catch (error) {
-      console.error(error)
-      return []
-    }
-  },
   // 查詢所有啟用中的操作項目 (訪客用，可複選，完全公開)
   async getOperationCatalogItems() {
     try {

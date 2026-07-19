@@ -22,6 +22,16 @@ const adminBooking = {
       return []
     }
   },
+  // 後台首頁月曆用：查詢某個月份的所有預約 (含所有狀態)
+  async getMonthAppointments(year, month) {
+    try {
+      const res = await api.get('/admin/appointments/calendar', { params: { year, month } })
+      return res?.resultCode === 0 && res.resultData ? res.resultData : []
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  },
   async approveAppointment(appointmentId) {
     try {
       const res = await api.patch(`/admin/appointments/${appointmentId}/approve`)
@@ -38,44 +48,6 @@ const adminBooking = {
       return { success: false, message: res.resultMsg }
     } catch (error) {
       return { success: false, message: error.response?.data?.resultMsg || '拒絕失敗，請稍後再試' }
-    }
-  },
-
-  // ===== 服務項目管理 =====
-  async getAllServices() {
-    try {
-      const res = await api.get('/admin/services')
-      return res?.resultCode === 0 && res.resultData ? res.resultData : []
-    } catch (error) {
-      console.error(error)
-      return []
-    }
-  },
-  async createService(postData) {
-    try {
-      const res = await api.post('/admin/services', postData)
-      if (res.resultCode === 0) return { success: true }
-      return { success: false, message: res.resultMsg }
-    } catch (error) {
-      return { success: false, message: error.response?.data?.resultMsg || '新增失敗，請稍後再試' }
-    }
-  },
-  async updateService(serviceItemId, postData) {
-    try {
-      const res = await api.put(`/admin/services/${serviceItemId}`, postData)
-      if (res.resultCode === 0) return { success: true }
-      return { success: false, message: res.resultMsg }
-    } catch (error) {
-      return { success: false, message: error.response?.data?.resultMsg || '更新失敗，請稍後再試' }
-    }
-  },
-  async deleteService(serviceItemId) {
-    try {
-      const res = await api.delete(`/admin/services/${serviceItemId}`)
-      if (res.resultCode === 0) return { success: true }
-      return { success: false, message: res.resultMsg }
-    } catch (error) {
-      return { success: false, message: error.response?.data?.resultMsg || '刪除失敗，請稍後再試' }
     }
   },
 

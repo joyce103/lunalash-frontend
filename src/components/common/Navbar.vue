@@ -38,7 +38,6 @@
               <router-link @click="bookingMenuOpen = false" to="/appointments" class="px-4 py-2 text-sm text-gray-600 hover:bg-lotus-50 hover:text-lotus-600 whitespace-nowrap">預約管理</router-link>
               <router-link @click="bookingMenuOpen = false" to="/scheduleManagement" class="px-4 py-2 text-sm text-gray-600 hover:bg-lotus-50 hover:text-lotus-600 whitespace-nowrap">時段管理</router-link>
               <router-link @click="bookingMenuOpen = false" to="/operationCatalogManagement" class="px-4 py-2 text-sm text-gray-600 hover:bg-lotus-50 hover:text-lotus-600 whitespace-nowrap">操作項目管理</router-link>
-              <router-link @click="bookingMenuOpen = false" to="/serviceManagement" class="px-4 py-2 text-sm text-gray-600 hover:bg-lotus-50 hover:text-lotus-600 whitespace-nowrap">服務管理</router-link>
             </div>
           </div>
 

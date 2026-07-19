@@ -9,7 +9,6 @@ import AccountManagement from '../views/AccountManagement.vue'
 import BookingPage from '../views/BookingPage.vue'
 import Dashboard from '../views/Dashboard.vue'
 import AppointmentManagement from '../views/AppointmentManagement.vue'
-import ServiceManagement from '../views/ServiceManagement.vue'
 import ScheduleManagement from '../views/ScheduleManagement.vue'
 import OperationCatalogManagement from '../views/OperationCatalogManagement.vue'
 import { isLoggedIn } from '@/stores/authState'
@@ -73,12 +72,6 @@ const router = createRouter({
       path: '/appointments',
       name: 'appointments',
       component: AppointmentManagement,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/serviceManagement',
-      name: 'serviceManagement',
-      component: ServiceManagement,
       meta: { requiresAuth: true },
     },
     {
