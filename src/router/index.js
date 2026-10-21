@@ -7,6 +7,7 @@ import TransactionQuery from '../views/TransactionQuery.vue'
 import CreateTransactionForm from '../views/CreateTransactionForm.vue'
 import AccountManagement from '../views/AccountManagement.vue'
 import BookingPage from '../views/BookingPage.vue'
+import BookingLookup from '../views/BookingLookup.vue'
 import Dashboard from '../views/Dashboard.vue'
 import AppointmentManagement from '../views/AppointmentManagement.vue'
 import ScheduleManagement from '../views/ScheduleManagement.vue'
@@ -61,6 +62,11 @@ const router = createRouter({
       path: '/booking',
       name: 'booking',
       component: BookingPage,
+    },
+    {
+      path: '/booking/lookup',
+      name: 'bookingLookup',
+      component: BookingLookup,
     },
     {
       path: '/dashboard',

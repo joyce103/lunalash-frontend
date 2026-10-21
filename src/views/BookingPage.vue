@@ -7,17 +7,40 @@
     />
 
     <!-- 送出成功後顯示確認訊息，其餘表單隱藏 -->
-    <div v-if="submitted" class="bg-white p-8 rounded-2xl border border-lotus-100 shadow-sm text-center space-y-3">
+    <div v-if="submitted" class="bg-white p-8 rounded-2xl border border-lotus-100 shadow-sm text-center space-y-4">
       <div class="text-4xl">🌸</div>
       <p class="text-lotus-600 font-medium">
-        已收到您的預約申請，待管理者確認，我們將透過 LINE 官方帳號通知您預約結果。
+        已收到您的預約申請，待店家確認後即可使用電話與查詢碼查詢結果。
       </p>
-      <button
-        @click="resetForm"
-        class="mt-2 px-5 py-2 rounded-xl bg-lotus-50 text-lotus-600 border border-lotus-200 hover:bg-lotus-100 text-sm font-medium transition-colors"
-      >
-        再預約一次
-      </button>
+
+      <div class="bg-lotus-50 border border-lotus-200 rounded-xl p-4 space-y-2">
+        <p class="text-xs text-gray-500">您的查詢碼</p>
+        <div class="flex items-center justify-center gap-2">
+          <span class="text-2xl font-bold tracking-widest text-lotus-600">{{ submittedQueryCode }}</span>
+          <button
+            @click="copyQueryCode"
+            class="px-3 py-1 rounded-lg text-xs font-medium bg-white border border-lotus-200 text-lotus-600 hover:bg-lotus-100 transition-colors"
+          >
+            {{ copied ? '已複製' : '複製' }}
+          </button>
+        </div>
+        <p class="text-xs text-red-400">請截圖或記下查詢碼，之後要用電話+查詢碼查詢預約結果</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+        <router-link
+          :to="`/booking/lookup?code=${submittedQueryCode}`"
+          class="px-5 py-2 rounded-xl bg-lotus-400 hover:bg-lotus-500 text-white text-sm font-medium transition-colors"
+        >
+          前往查詢預約結果
+        </router-link>
+        <button
+          @click="resetForm"
+          class="px-5 py-2 rounded-xl bg-lotus-50 text-lotus-600 border border-lotus-200 hover:bg-lotus-100 text-sm font-medium transition-colors"
+        >
+          再預約一次
+        </button>
+      </div>
     </div>
 
     <template v-else>
@@ -191,6 +214,8 @@ const nameTouched = ref(false)
 const phoneTouched = ref(false)
 const submitting = ref(false)
 const submitted = ref(false)
+const submittedQueryCode = ref('')
+const copied = ref(false)
 
 // 電話只允許數字、+、-、空格、括號，且去掉這些符號後至少要有 8 碼數字 (涵蓋市話/手機常見格式)
 const PHONE_FORMAT = /^[0-9+\-\s()]+$/
@@ -304,6 +329,7 @@ const handleSubmit = async () => {
   submitting.value = false
 
   if (result.success) {
+    submittedQueryCode.value = result.data?.queryCode || ''
     submitted.value = true
   } else {
     alert(result.message || '預約失敗，請稍後再試')
@@ -312,8 +338,20 @@ const handleSubmit = async () => {
   }
 }
 
+const copyQueryCode = async () => {
+  try {
+    await navigator.clipboard.writeText(submittedQueryCode.value)
+    copied.value = true
+    setTimeout(() => { copied.value = false }, 2000)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const resetForm = () => {
   submitted.value = false
+  submittedQueryCode.value = ''
+  copied.value = false
   selectedItemIds.value = new Set()
   selectedDate.value = ''
   selectedTime.value = ''

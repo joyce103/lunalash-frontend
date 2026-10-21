@@ -41,6 +41,16 @@ const adminBooking = {
       return { success: false, message: error.response?.data?.resultMsg || '核准失敗，請稍後再試' }
     }
   },
+  // 連結/取消連結會員 (memberId 傳 null 代表取消連結)
+  async linkMember(appointmentId, memberId) {
+    try {
+      const res = await api.put(`/admin/appointments/${appointmentId}/member`, { memberId })
+      if (res.resultCode === 0) return { success: true, data: res.resultData }
+      return { success: false, message: res.resultMsg }
+    } catch (error) {
+      return { success: false, message: error.response?.data?.resultMsg || '連結會員失敗，請稍後再試' }
+    }
+  },
   async rejectAppointment(appointmentId) {
     try {
       const res = await api.patch(`/admin/appointments/${appointmentId}/reject`)
@@ -48,6 +58,25 @@ const adminBooking = {
       return { success: false, message: res.resultMsg }
     } catch (error) {
       return { success: false, message: error.response?.data?.resultMsg || '拒絕失敗，請稍後再試' }
+    }
+  },
+  // 查詢這筆預約在指定日期可以改到的開始時間列表 (自己目前占用的時段視為空檔)
+  async getRescheduleSlots(appointmentId, date) {
+    try {
+      const res = await api.get(`/admin/appointments/${appointmentId}/reschedule-slots`, { params: { date } })
+      return res?.resultCode === 0 && res.resultData ? res.resultData : []
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  },
+  async rescheduleAppointment(appointmentId, date, time) {
+    try {
+      const res = await api.patch(`/admin/appointments/${appointmentId}/reschedule`, { date, time })
+      if (res.resultCode === 0) return { success: true, data: res.resultData }
+      return { success: false, message: res.resultMsg }
+    } catch (error) {
+      return { success: false, message: error.response?.data?.resultMsg || '改期失敗，請稍後再試' }
     }
   },
 

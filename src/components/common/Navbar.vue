@@ -20,6 +20,9 @@
           <router-link to="/booking" class="whitespace-nowrap text-gray-500 hover:text-lotus-500 px-2 py-2 text-sm font-medium transition-colors duration-200">
             線上預約
           </router-link>
+          <router-link to="/booking/lookup" class="whitespace-nowrap text-gray-500 hover:text-lotus-500 px-2 py-2 text-sm font-medium transition-colors duration-200">
+            查詢預約
+          </router-link>
 
           <!-- 預約系統後台相關頁面收進下拉選單，避免導覽列項目太多跑版 -->
           <div v-if="isLoggedIn" class="relative" @keydown.escape="bookingMenuOpen = false">
