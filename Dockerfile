@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+# Google OAuth Client ID 是公開值 (不是密鑰)，但因為是純靜態前端，build 時就要把它寫進 JS，
+# 執行期無法再注入，所以用 build-arg 從 docker-compose.yml 的 build.args 帶進來
+ARG VITE_GOOGLE_CLIENT_ID
+ENV VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
 RUN npm run build
 
 # 第二階段：使用 Nginx 伺服器 (2026/10 安全更新，修補 5 項中度漏洞)

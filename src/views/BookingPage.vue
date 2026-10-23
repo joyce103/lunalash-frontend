@@ -6,6 +6,20 @@
       subtitle="選擇操作項目、日期與時段，填寫姓名電話即可完成預約"
     />
 
+    <!-- Google 登入：純粹是選項，不登入一樣可以用姓名+電話+查詢碼完成預約 -->
+    <div v-if="!submitted" class="bg-white p-4 rounded-2xl border border-lotus-100 shadow-sm flex items-center justify-between gap-3 flex-wrap">
+      <template v-if="isGuestLoggedIn">
+        <p class="text-sm text-gray-600">您好，{{ guestName }}，已用 Google 帳號登入</p>
+        <router-link to="/booking/my" class="text-sm text-lotus-600 hover:text-lotus-500 underline whitespace-nowrap">
+          查看我的預約
+        </router-link>
+      </template>
+      <template v-else>
+        <p class="text-xs text-gray-400">登入後可用 Google 帳號查詢預約，不用記查詢碼（也可以跳過，直接用下方表單預約）</p>
+        <div ref="googleButtonEl"></div>
+      </template>
+    </div>
+
     <!-- 送出成功後顯示確認訊息，其餘表單隱藏 -->
     <div v-if="submitted" class="bg-white p-8 rounded-2xl border border-lotus-100 shadow-sm text-center space-y-4">
       <div class="text-4xl">🌸</div>
@@ -185,7 +199,11 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import booking from '@/utils/booking'
+import guestAuth from '@/utils/guestAuth'
+import { isGuestLoggedIn, guestName } from '@/stores/guestAuthState'
 import PageTitle from '@/components/common/PageTitle.vue'
+
+const googleButtonEl = ref(null)
 
 const operationItems = ref([])
 const selectedItemIds = ref(new Set())
@@ -364,8 +382,28 @@ const resetForm = () => {
 
 watch([currentYear, currentMonth], loadCalendar)
 
+// Google Sign-In 的官方 script 是在 index.html 用 <script async defer> 載入的全域變數
+// window.google，不是 npm 套件；因為是 async，掛載時機不保證跑在這個 component mount 之前，
+// 所以用短暫重試而不是假設它一定已經存在。credential 是 Google 簽過的 ID Token，
+// 直接丟給後端驗證換站內 JWT，前端不解析也不信任它的內容
+const initGoogleSignIn = (retriesLeft = 20) => {
+  if (!googleButtonEl.value) return
+  if (!window.google) {
+    if (retriesLeft > 0) setTimeout(() => initGoogleSignIn(retriesLeft - 1), 200)
+    return
+  }
+  window.google.accounts.id.initialize({
+    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    callback: async (response) => {
+      await guestAuth.loginWithGoogle(response.credential)
+    },
+  })
+  window.google.accounts.id.renderButton(googleButtonEl.value, { theme: 'outline', size: 'medium' })
+}
+
 onMounted(async () => {
   operationItems.value = await booking.getOperationCatalogItems()
   await loadCalendar()
+  initGoogleSignIn()
 })
 </script>

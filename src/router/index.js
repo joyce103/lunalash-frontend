@@ -8,11 +8,13 @@ import CreateTransactionForm from '../views/CreateTransactionForm.vue'
 import AccountManagement from '../views/AccountManagement.vue'
 import BookingPage from '../views/BookingPage.vue'
 import BookingLookup from '../views/BookingLookup.vue'
+import MyAppointments from '../views/MyAppointments.vue'
 import Dashboard from '../views/Dashboard.vue'
 import AppointmentManagement from '../views/AppointmentManagement.vue'
 import ScheduleManagement from '../views/ScheduleManagement.vue'
 import OperationCatalogManagement from '../views/OperationCatalogManagement.vue'
 import { isLoggedIn } from '@/stores/authState'
+import { isGuestLoggedIn } from '@/stores/guestAuthState'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,6 +71,12 @@ const router = createRouter({
       component: BookingLookup,
     },
     {
+      path: '/booking/my',
+      name: 'myAppointments',
+      component: MyAppointments,
+      meta: { requiresGuestAuth: true },
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: Dashboard,
@@ -102,6 +110,11 @@ router.beforeEach((to) => {
   }
   if (to.path === '/' && isLoggedIn.value) {
     return { path: '/dashboard' }
+  }
+  // 訪客 Google 登入是完全獨立的另一套身分，跟上面管理員的判斷互不影響：
+  // 沒用 Google 登入就不能看「我的預約」，導回預約首頁 (不是管理員登入頁)
+  if (to.meta.requiresGuestAuth && !isGuestLoggedIn.value) {
+    return { path: '/booking' }
   }
   return true
 })

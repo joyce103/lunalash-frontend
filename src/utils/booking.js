@@ -1,4 +1,5 @@
 import api from './api'
+import guestApi from './guestApi'
 
 const booking = {
   // 查詢所有啟用中的操作項目 (訪客用，可複選，完全公開)
@@ -31,10 +32,13 @@ const booking = {
       return []
     }
   },
-  // 送出預約申請，成功時 data 裡會帶查詢碼 (queryCode)，供之後查詢預約狀態用
+  // 送出預約申請，成功時 data 裡會帶查詢碼 (queryCode)，供之後查詢預約狀態用。
+  // 用 guestApi 送出：如果訪客已經用 Google 登入，會自動帶 guestToken，後端據此
+  // 自動填入已驗證過的 email；沒登入時 guestApi 不會帶任何 Authorization header，
+  // 行為跟原本的匿名呼叫完全一樣
   async createAppointment(postData) {
     try {
-      const res = await api.post('/appointments', postData)
+      const res = await guestApi.post('/appointments', postData)
       if (res.resultCode === 0) {
         return { success: true, data: res.resultData }
       }
